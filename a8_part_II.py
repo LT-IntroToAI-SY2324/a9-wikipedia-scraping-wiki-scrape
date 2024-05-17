@@ -1,4 +1,3 @@
-# some python libraries we'll be using
 import re, string, calendar
 from wikipedia import page
 from bs4 import BeautifulSoup
@@ -10,39 +9,44 @@ from utilities import *
 
 
 def get_planet_radius(planet_name: str) -> str:
-    """Gets the radius of the given planet
+    """
+    Gets the radius of the given planet.
 
     Args:
         planet_name - name of the planet to get radius of
 
     Returns:
-        radius of the given planet
+        radius of the given planet or a message indicating the absence of data
     """
     infobox_text = clean_text(get_first_infobox_text(get_page_html(planet_name)))
-    # TODO: fill this in
-    pattern = "REPLACE ME"
+    pattern = r"Polar\s*radius[^0-9]*([\d,\.]+)\s*(km|kilometers)?"
     error_text = "Page infobox has no polar radius information"
-    match = get_match(infobox_text, pattern, error_text)
-    return match.group("radius")
 
+    try:
+        match = get_match(infobox_text, pattern, error_text)
+        return match.group(1) 
+    except AttributeError:
+        return error_text 
 
 def get_birth_date(name: str) -> str:
-    """Gets birth date of the given person
+    """
+    Gets the birth date of the given person.
 
     Args:
         name - name of the person
 
     Returns:
-        birth date of the given person
+        birth date of the given person or a message indicating the absence of data
     """
     infobox_text = clean_text(get_first_infobox_text(get_page_html(name)))
-    # TODO: fill this in
-    pattern = "REPLACE ME"
-    error_text = (
-        "Page infobox has no birth information (at least none in xxxx-xx-xx format)"
-    )
-    match = get_match(infobox_text, pattern, error_text)
-    return match.group("birth")
+    pattern = r"(?P<birth>\d{4}-\d{2}-\d{2})"
+    error_text = "Page infobox has no birth information (at least none in xxxx-xx-xx format)"
+
+    match = re.search(pattern, infobox_text)
+    if match:
+        return match.group("birth")  
+    else:
+        return error_text  
 
 
 if __name__ == "__main__":
@@ -57,12 +61,12 @@ if __name__ == "__main__":
     print(f'Saturn has a polar radius of {get_planet_radius("Saturn")}km')
 
     # uncomment below lines for tests once you think you're getting the right output
-    # print('\n<<<< Running asserts, this might take a sec >>>>')
-    # assert get_planet_radius("Mars") == "3376.2", "Incorrect radius for Mars"
-    # assert get_planet_radius("Earth") == "6356.752", "Incorrect radius for Earth"
-    # assert get_planet_radius("Jupiter") == "66,854", "Incorrect radius for Jupiter"
-    # assert get_planet_radius("Saturn") == "54,364", "Incorrect radius for Saturn"
-    # print('\n<<<< Planet radius tests passed >>>>')
+    print('\n<<<< Running asserts, this might take a sec >>>>')
+    assert get_planet_radius("Mars") == "3376.2", "Incorrect radius for Mars"
+    assert get_planet_radius("Earth") == "6356.752", "Incorrect radius for Earth"
+    assert get_planet_radius("Jupiter") == "66,854", "Incorrect radius for Jupiter"
+    assert get_planet_radius("Saturn") == "54,364", "Incorrect radius for Saturn"
+    print('\n<<<< Planet radius tests passed >>>>')
 
     print("\n<<<<<<<<<<<<<< Testing Birth Dates >>>>>>>>>>>>>>")
     # should be 1906-12-09
@@ -75,11 +79,11 @@ if __name__ == "__main__":
     print(format_birth(get_birth_date("Anita Borg"), "Anita Borg"))
 
     # uncomment below lines for tests once you think you're getting the right output
-    # print('\n<<<< Running asserts, this might take a sec >>>>')
-    # assert get_birth_date("Grace Hopper") == "1906-12-09", "Incorrect birth date for Grace Hopper"
-    # assert get_birth_date("Alan Turing") == "1912-06-23", "Incorrect birth date for Alan Turing"
-    # assert get_birth_date("Tim Berners-Lee") == "1955-06-08", "Incorrect birth date for Tim Berners-Lee"
-    # assert get_birth_date("Anita Borg") == "1949-01-17", "Incorrect birth date for Anita Borg"
-    # print('\n<<<< Birth date tests passed >>>>')
+    print('\n<<<< Running asserts, this might take a sec >>>>')
+    assert get_birth_date("Grace Hopper") == "1906-12-09", "Incorrect birth date for Grace Hopper"
+    assert get_birth_date("Alan Turing") == "1912-06-23", "Incorrect birth date for Alan Turing"
+    assert get_birth_date("Tim Berners-Lee") == "1955-06-08", "Incorrect birth date for Tim Berners-Lee"
+    assert get_birth_date("Anita Borg") == "1949-01-17", "Incorrect birth date for Anita Borg"
+    print('\n<<<< Birth date tests passed >>>>')
 
-    # print('\n<<<< All tests passed! >>>>')
+    print('\n<<<< All tests passed! >>>>')

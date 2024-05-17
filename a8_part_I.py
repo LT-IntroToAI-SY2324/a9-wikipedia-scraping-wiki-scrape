@@ -58,4 +58,4 @@ if __name__ == "__main__":
         assert hashtag_matches == ['cs', 'python', 'LT', 'champions'], "Incorrect hashtags"
         print('\n<<<< Hashtag extraction tests passed >>>>\n')
 
-        print('\n<<<< All tests passed! >>>>'
+        print('\n<<<< All tests passed! >>>>')
